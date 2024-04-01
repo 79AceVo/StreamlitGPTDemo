@@ -17,7 +17,7 @@ prompt = PromptTemplate(
     Human: {question}
     AI:'''
 )
-
+openai_api_key = st.sidebar.text_input('OpenAI API Key')
 def LLM_Chain():
     llm = ChatOpenAI(openai_api_key=config("OPENAI_API_KEY"))
     memory = ConversationBufferWindowMemory(memory_key="chat_history", k=4)
