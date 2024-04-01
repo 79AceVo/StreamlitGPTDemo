@@ -4,7 +4,6 @@ import streamlit as st
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from decouple import config
 from langchain.memory import ConversationBufferWindowMemory
 
 st.title("ChatGPT Clone")
