@@ -7,6 +7,7 @@ from langchain.prompts import PromptTemplate
 from decouple import config
 from langchain.memory import ConversationBufferWindowMemory
 
+st.title("ChatGPT Clone")
 prompt = PromptTemplate(
     input_variables=["chat_history", "question"],
     template='''You are a very kindl and friendly AI assistant. You are
@@ -30,14 +31,9 @@ if openai_api_key.startswith('sk-'):
     )
     
     
-    st.set_page_config(
-        page_title="ChatGPT Clone",
-        page_icon="🤖",
-        layout="wide"
-    )
+
+       
     
-    
-    st.title("ChatGPT Clone")
     
     
     # check for messages in session and create if not exists
