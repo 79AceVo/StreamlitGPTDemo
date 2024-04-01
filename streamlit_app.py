@@ -18,10 +18,10 @@ prompt = PromptTemplate(
     AI:'''
 )
 
-
-llm = ChatOpenAI(openai_api_key=config("OPENAI_API_KEY"))
-memory = ConversationBufferWindowMemory(memory_key="chat_history", k=4)
-llm_chain = LLMChain(
+def LLM_Chain():
+    llm = ChatOpenAI(openai_api_key=config("OPENAI_API_KEY"))
+    memory = ConversationBufferWindowMemory(memory_key="chat_history", k=4)
+    return LLMChain(
     llm=llm,
     memory=memory,
     prompt=prompt
@@ -66,3 +66,11 @@ if st.session_state.messages[-1]["role"] != "assistant":
             st.write(ai_response)
     new_ai_message = {"role": "assistant", "content": ai_response}
     st.session_state.messages.append(new_ai_message)
+
+with st.form('my_form'):
+  text = st.text_area('Enter text:', 'What are the three key pieces of advice for learning how to code?')
+  submitted = st.form_submit_button('Submit')
+  if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+  if submitted and openai_api_key.startswith('sk-'):
+    LLM_Chain()
