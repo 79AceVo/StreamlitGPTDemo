@@ -1,34 +1,68 @@
-from openai import OpenAI
+
+
 import streamlit as st
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from decouple import config
+from langchain.memory import ConversationBufferWindowMemory
 
-st.title("ChatGPT-like clone")
+prompt = PromptTemplate(
+    input_variables=["chat_history", "question"],
+    template=''''''You are a very kindl and friendly AI assistant. You are
+    currently having a conversation with a human. Answer the questions
+    in a kind and friendly tone with some sense of humor.
+    
+    chat_history: {chat_history},
+    Human: {question}
+    AI:'''
+)
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo"
+llm = ChatOpenAI(openai_api_key=config("OPENAI_API_KEY"))
+memory = ConversationBufferWindowMemory(memory_key="chat_history", k=4)
+llm_chain = LLMChain(
+    llm=llm,
+    memory=memory,
+    prompt=prompt
+)
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
 
+st.set_page_config(
+    page_title="ChatGPT Clone",
+    page_icon="🤖",
+    layout="wide"
+)
+
+
+st.title("ChatGPT Clone")
+
+
+# check for messages in session and create if not exists
+if "messages" not in st.session_state.keys():
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hello there, am ChatGPT clone"}
+    ]
+
+
+# Display all messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        st.write(message["content"])
 
-if prompt := st.chat_input("What is up?"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+
+user_prompt = st.chat_input()
+
+if user_prompt is not None:
+    st.session_state.messages.append({"role": "user", "content": user_prompt})
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.write(user_prompt)
 
+
+if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
-        stream = client.chat.completions.create(
-            model=st.session_state["openai_model"],
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
-        response = st.write_stream(stream)
-    st.session_state.messages.append({"role": "assistant", "content": response})
-
+        with st.spinner("Loading..."):
+            ai_response = llm_chain.predict(question=user_prompt)
+            st.write(ai_response)
+    new_ai_message = {"role": "assistant", "content": ai_response}
+    st.session_state.messages.append(new_ai_message)
