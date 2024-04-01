@@ -10,7 +10,7 @@ from langchain.memory import ConversationBufferWindowMemory
 st.title("ChatGPT Clone")
 prompt = PromptTemplate(
     input_variables=["chat_history", "question"],
-    template='''You are a very kindl and friendly AI assistant. You are
+    template='''You are a very kind and friendly AI assistant. You are
     currently having a conversation with a human. Answer the questions
     in a kind and friendly tone with some sense of humor.
     
